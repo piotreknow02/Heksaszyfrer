@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="./style.css">
+    <title>Heksaszyfrer</title>
+</head>
+<body>
+    <nav style="-webkit-app-region: drag">
+        <h1 class="title">Heksaszyfrer</h1>
+    </nav>
+    <main>
+        <div class="encrypt-box">
+            <h1>a => xx</h1>
+            <div class="input-container">
+                <input type="text" name="enrypt" id="encrypt-input">
+                <img id="copy-encrypt" src="./images/content_copy-24px.svg" alt="Copy">
+            </div>
+            <div class="centerer">
+                <h3 id="encrypt-output"></h3>
+            </div>
+        </div>
+        <div class="decrypt-box">
+            <h1>xx => a</h1>
+            <div class="input-container">
+                <input type="text" name="decrypt" id="decrypt-input">
+                <img id="copy-decrypt" src="./images/content_copy-24px.svg" alt="Copy">
+            </div>
+            <div class="centerer">
+                <h3 id="decrypt-output"></h3>
+            </div>
+        </div>
+    </main>
+    <script>
+        const electron = require('electron');
+        const { ipcRenderer } = electron;
+
+        document.querySelector("#copy-encrypt").addEventListener('click', () => {
+            const textToCopy = document.querySelector("#encrypt-output").textContent;
+            navigator.clipboard.writeText(textToCopy);
+        });
+        document.querySelector("#copy-decrypt").addEventListener('click', () => {
+            const textToCopy = document.querySelector("#decrypt-output").textContent;
+            navigator.clipboard.writeText(textToCopy);
+        });
+
+        document.querySelector("#encrypt-input").addEventListener('input', (e) => {
+            e.preventDefault();
+            const value = document.querySelector("#encrypt-input").value;
+            ipcRenderer.send('encrypt:input', value);
+        });
+        document.querySelector("#decrypt-input").addEventListener('input', (e) => {
+            e.preventDefault();
+            const value = document.querySelector("#decrypt-input").value;
+            ipcRenderer.send('decrypt:input', value);
+        });
+
+        ipcRenderer.on('encrypt:output', (e, value) => {
+            document.querySelector("#encrypt-output").textContent = value;
+        });
+        ipcRenderer.on('decrypt:output', (e, value) => {
+            document.querySelector("#decrypt-output").textContent = value;
+        });
+    </script>
+</body>
+</html>
